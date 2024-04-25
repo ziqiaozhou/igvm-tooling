@@ -545,7 +545,8 @@ class IGVMFile(VMState):
         self.vmsa._0._0.sev_feature_snp = 1
         self.vmsa._0._0.sev_feature_restrict_injection = 1
         self.vmsa.virtual_tom = 0x0
-        self.vmsa.xcr0 = 0x1
+        if self.vmsa.xcr0 == 0:
+            self.vmsa.xcr0 = 0x1
         return self.vmsa
 
     def gen_id_block(self, digest: bytes) -> IGVM_VHS_SNP_ID_BLOCK:

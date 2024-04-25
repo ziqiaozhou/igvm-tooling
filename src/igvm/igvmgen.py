@@ -10,9 +10,17 @@ from distutils.log import INFO
 from enum import Enum
 from frozendict import frozendict
 
-from igvm.bootcstruct import *
+try:
+    from igvm.bootcstruct import *
+except ImportError:
+    import os
+    module_dir = os.path.join(os.path.dirname(__file__), "../")
+    sys.path.insert(0, module_dir)
+    from igvm.bootcstruct import *
+
 from igvm.igvmbzimage import IGVMLinuxGenerator, IGVMLinux2Generator
 from igvm.igvmelf import IGVMELFGenerator
+from igvm.igvmsm import IGVMVeriSMoGenerator
 from igvm.igvmfile import IGVMFile
 from igvm.vmstate import ARCH, Arch
 
@@ -21,11 +29,13 @@ class INFORM(Enum):
     bzImage = "bzImage"
     elf = "elf"
     bzImage2 = "bzImage2"
+    verismo = "verismo"
 
 
 Generators = frozendict({INFORM.bzImage: IGVMLinuxGenerator,
                          INFORM.bzImage2: IGVMLinux2Generator,
-                         INFORM.elf: IGVMELFGenerator, })
+                         INFORM.elf: IGVMELFGenerator, 
+                         INFORM.verismo: IGVMVeriSMoGenerator,})
 
 
 def str2bool(val):

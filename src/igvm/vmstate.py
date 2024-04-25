@@ -414,15 +414,21 @@ class VMState(object):
         else:
             raise Exception("Invalid paging_level = %d"%(paging_level))
         cr4.reg.PAE = 1
+        cr4.reg.OSFXSR =1
+        cr4.reg.OSXSAVE = 1
+        cr4.reg.OSXMMEXCPT = 1
         # setup cr3
         self.vmsa.cr3 = pgd_addr
         if self.encrypted_page:
             self.vmsa.cr3 |= _PAGE_ENCRYPTED
         # turn on paging
         cr0.reg.PG = 1
+        #cr0.reg.MP = 1
         self.vmsa.cr0 = cr0.val
         self.vmsa.cr4 = cr4.val
         self.vmsa.efer = efer.val
+
+        self.vmsa.xcr0 = 0b111
         return addr
 
     def load_seg(self, vmcb_seg: struct_vmcb_seg, selector: int):
@@ -488,6 +494,7 @@ class VMState(object):
         self.memory.write(gdt_addr, b''.join(
             [bytearray(desc) for desc in gdt]))
         # update gdtr to point to the GDT in memory
+        print("gdt = ", gdt_addr, gdt_size)
         self.vmsa.gdtr.base = gdt_addr
         self.vmsa.gdtr.limit = gdt_size - 1
         # update segment registers
