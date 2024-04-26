@@ -6,23 +6,26 @@ import sys
 import json
 import logging
 
-from distutils.log import INFO
 from enum import Enum
 from frozendict import frozendict
 
 try:
     from igvm.bootcstruct import *
+    from igvm.igvmbzimage import IGVMLinuxGenerator, IGVMLinux2Generator
+    from igvm.igvmelf import IGVMELFGenerator
+    from igvm.igvmsm import IGVMVeriSMoGenerator
+    from igvm.igvmfile import IGVMFile
+    from igvm.vmstate import ARCH, Arch
 except ImportError:
     import os
     module_dir = os.path.join(os.path.dirname(__file__), "../")
     sys.path.insert(0, module_dir)
     from igvm.bootcstruct import *
-
-from igvm.igvmbzimage import IGVMLinuxGenerator, IGVMLinux2Generator
-from igvm.igvmelf import IGVMELFGenerator
-from igvm.igvmsm import IGVMVeriSMoGenerator
-from igvm.igvmfile import IGVMFile
-from igvm.vmstate import ARCH, Arch
+    from igvm.igvmbzimage import IGVMLinuxGenerator, IGVMLinux2Generator
+    from igvm.igvmelf import IGVMELFGenerator
+    from igvm.igvmsm import IGVMVeriSMoGenerator
+    from igvm.igvmfile import IGVMFile
+    from igvm.vmstate import ARCH, Arch
 
 
 class INFORM(Enum):

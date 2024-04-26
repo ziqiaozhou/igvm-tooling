@@ -62,7 +62,7 @@ class IGVMVeriSMoGenerator(IGVMBaseGenerator):
         with open(bin_path, "rb") as f:
             self._kernel: bytes = f.read()
 
-        vmpl2_file: argparse.FileType = kwargs["vmpl2_kernel"] if "vmpl2_kernel" in kwargs else None
+        vmpl2_file: argparse.FileType = kwargs["shared_payload"] if "shared_payload" in kwargs else None
         self.pgtable_level: int = kwargs["pgtable_level"] if "pgtable_level" in kwargs else 2
         self.assign_stack: bool = True
         self._vmpl2_kernel: bytearray = bytearray(
@@ -98,6 +98,7 @@ class IGVMVeriSMoGenerator(IGVMBaseGenerator):
 
     def load_code(self):
         # Setup pgtable and boot stack after vmsa page but before code.
+        print("load")
         if self.assign_stack:
             boot_stack_addr = self.state.memory.allocate(self.BOOT_STACK_SIZE, 16)
             print("assign_stack", boot_stack_addr)
@@ -124,13 +125,13 @@ class IGVMVeriSMoGenerator(IGVMBaseGenerator):
         rela_name = '.rela'
         rela = self.elf.elf.get_section_by_name(rela_name)
         for reloc in rela.iter_relocations():
-            print('Relocation (%s)' % 'RELA' if reloc.is_RELA() else 'REL')
+            # print('Relocation (%s)' % 'RELA' if reloc.is_RELA() else 'REL')
             # Relocation entry attributes are available through item lookup
             offset = reloc['r_offset'];
             r_addend = reloc['r_addend'];
             val = self._start + r_addend
             packed_u64 = bytes(ctypes.c_uint64(val))
-            print("%x %x" %(offset, val))
+            # print("%x %x" %(offset, val))
             self._kernel = self._kernel[:offset] + packed_u64 + self._kernel[(offset + 8):]
 
         for i in range(self.elf.elf.num_segments()):
@@ -195,6 +196,7 @@ class IGVMVeriSMoGenerator(IGVMBaseGenerator):
         monitor_params.vmpl2_acpi = ACPI_RSDP_ADDR
         monitor_params.vmpl2_acpi_size = ACPI_END_ADDR - ACPI_RSDP_ADDR
         del monitor_params
+        print("Done")
 
     def _setup_e820_opt(self, e820_table, vmpl2_kernel_addr):
         e820_table[0].addr = 0
