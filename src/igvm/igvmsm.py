@@ -43,7 +43,7 @@ class IGVMVeriSMoGenerator(IGVMBaseGenerator):
     R = 1<<2
     W = 1<<1
     X = 1<<0
-    BOOT_STACK_SIZE = 0x4000
+    BOOT_STACK_SIZE = 0x10000
     def __init__(self, **kwargs):
         # Parse BzImage header
         IGVMBaseGenerator.__init__(self, **kwargs)
